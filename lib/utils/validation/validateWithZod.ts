@@ -4,7 +4,7 @@ import {
   type ResetPasswordProps,
   type SignUpProps,
 } from "@/interfaces/formInputs";
-import { zxcvbnAsync, zxcvbnOptions } from "@zxcvbn-ts/core";
+import { zxcvbnAsync, zxcvbnOptions, zxcvbn } from "@zxcvbn-ts/core";
 import * as zxcvbnCommonPackage from "@zxcvbn-ts/language-common";
 import * as zxcvbnEnPackage from "@zxcvbn-ts/language-en";
 import { z } from "zod";
@@ -29,19 +29,18 @@ const signUpSchema: z.ZodType<SignUpProps> = z
     firstName: z
       .string()
       .min(2, { message: "First Name is required" })
-      .regex(/^[A-Z][a-z]+(?:-[a-z']+)?$/, {
-        message:
-          'First name must be in sentence case, can include hyphen, and apostrophes (e.g., "Ali", "Ade-Bright" or "Smith\'s").',
-      })
-      .max(50, { message: "First Name must be less than 50 characters" }),
+      .max(50, { message: "First Name must be less than 50 characters" })
+      .transform((value) => {
+        return value.charAt(0).toUpperCase() + value.slice(1).toLowerCase();
+      }),
     lastName: z
       .string()
       .min(2, { message: "Last Name is required" })
-      .regex(/^[A-Z][a-z]+(?:-[a-z']+)?$/, {
-        message:
-          'Last name must be in sentence case, can include hyphen, and apostrophes (e.g., "Ali", "Ade-Bright" or "Smith\'s").',
-      })
-      .max(50, { message: "Last Name must be less than 50 characters" }),
+      .max(50, { message: "Last Name must be less than 50 characters" })
+      .transform((value) => {
+        // With this we don't have to force the user to type in sentence case we do the transformation implicitly since name is not something sensitive we don't have to force the user to type in a particular case which seems inconvenient to me before
+        return value.charAt(0).toUpperCase() + value.slice(1).toLowerCase();
+      }),
     email: z
       .string()
 
@@ -55,6 +54,7 @@ const signUpSchema: z.ZodType<SignUpProps> = z
     }),
     password: z
       .string()
+      .min(6, { message: "Password must be at least 6 characters" })
       .regex(
         /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[.,!@#$%^&*])[A-Za-z\d.,!@#$%^&*]{6,}$/,
         {
@@ -62,17 +62,35 @@ const signUpSchema: z.ZodType<SignUpProps> = z
             "Password must contain at least one uppercase letter, one lowercase letter, one number, and one special character",
         },
       )
-      .min(6, { message: "Password must be at least 6 characters" })
       .max(50)
-      .refine(
-        async (value) => {
-          const result = await checkPasswordStrength(value);
-          return typeof result === "number" && result < 3 ? false : true;
-        },
-        {
-          message: "Password is too weak!!",
-        },
-      ),
+      .transform((value, ctx) => {
+        const options = {
+          dictionary: {
+            ...zxcvbnCommonPackage.dictionary,
+            ...zxcvbnEnPackage.dictionary,
+          },
+          translations: {
+            ...zxcvbnEnPackage.translations,
+          },
+          graphs: zxcvbnCommonPackage.adjacencyGraphs,
+          useLevenshteinDistance: true,
+        };
+        zxcvbnOptions.setOptions(options);
+        const testedResult = zxcvbn(value);
+
+        console.log(testedResult);
+
+        if (testedResult.score < 3) {
+          testedResult.feedback.suggestions.map((issue) =>
+            ctx.addIssue({
+              code: z.ZodIssueCode.custom,
+              message: issue,
+            }),
+          );
+        }
+
+        return value;
+      }),
     confirmPassword: z.string().min(6, { message: "Passwords must match" }),
   })
   .refine((data) => data.password === data.confirmPassword, {

@@ -48,7 +48,7 @@ const SignUp = () => {
     reValidateMode: "onChange",
   });
 
-  const password: string = watch("password", "");
+  const password = watch("password", "");
 
   const [result, setResult] = useState<number>(0);
   const deferredPassword = useDeferredValue(password);
