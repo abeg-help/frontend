@@ -2,6 +2,14 @@
 @tailwind components;
 @tailwind utilities;
 
+html:has([data-rem-reset]) {
+  font-size: 62.5%;
+}
+
+body:has([data-rem-reset]) {
+  font-size: 1.6rem;
+}
+
 html,
 body {
   height: 100%;
@@ -29,10 +37,12 @@ input[type="number"]::-webkit-outer-spin-button {
   flex-direction: column;
   justify-content: space-between;
 }
+
 input[type="number"] {
   -moz-appearance: textfield;
   appearance: textfield;
 }
+
 input::-webkit-outer-spin-button,
 input::-webkit-inner-spin-button {
   -webkit-appearance: none;
@@ -50,7 +60,7 @@ input[data-autocompleted] {
   background-color: transparent !important;
 }
 
-/* 
+/*
 Storybook Preview Body Background Color intentionally set to edge against machines dark modes
 TODO: Configure a dark mode support system for stories at some point
 */

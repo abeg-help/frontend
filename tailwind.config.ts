@@ -20,13 +20,25 @@ const config: Config = {
           "conic-gradient(from 180deg at 50% 50%, var(--tw-gradient-stops))",
       },
       boxShadow: {
-        "auth-layout-shadow": " 0px 2px 32px 0px rgba(0, 0, 0, 0.08)",
+        "auth-layout-shadow": "0px 2px 32px 0px rgba(0, 0, 0, 0.08)",
       },
       colors: {
         text: "#1B1818",
         successText: "#484848",
+        placeholder: "#8D8B8B",
+        unfocused: "#A8CCCC",
         formBtn: "#008080",
         validationMsg: "#268384",
+        popover: "hsl(0 0% 100%)",
+        "popover-foreground": "hsl(222.2 47.4% 11.2%)",
+        accent: "hsl(210 40% 96.1%)",
+        "accent-foreground": "hsl(222.2 47.4% 11.2%)",
+        input: "hsl(214.3 31.8% 91.4%)",
+        ring: "hsl(215 20.2% 65.1%)",
+        muted: "hsl(210 40% 96.1%)",
+        "muted-foreground": "hsl(215.4 16.3% 46.9%)",
+        background: "hsl(0 0% 100%)",
+
         abeg: {
           button: {
             10: "#1C8384",

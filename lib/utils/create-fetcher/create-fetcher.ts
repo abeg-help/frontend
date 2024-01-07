@@ -11,9 +11,10 @@ const createFetcher = <TBaseData, TBaseError>(
 ) => {
   const {
     baseURL,
-    timeout = 5000,
+    timeout,
     defaultErrorMessage = "Failed to fetch success response from server!",
-    responseInterceptor,
+    onResponseSuccess,
+    onResponseError,
     ...restOfBaseConfig
   } = baseConfig;
 
@@ -29,11 +30,18 @@ const createFetcher = <TBaseData, TBaseError>(
     bodyData: Record<string, unknown>,
   ): Promise<AbegResponseData<TData, TError>>;
 
+  async function callApi<TData = TBaseData, TError = TBaseError>(
+    url: `/${string}`,
+    bodyData: Record<string, unknown>,
+    externalSignal: RequestInit["signal"],
+  ): Promise<AbegResponseData<TData, TError>>;
+
   // Implementation
   async function callApi<TData = TBaseData, TError = TBaseError>(
     url: `/${string}`,
     bodyData?: Record<string, unknown>,
-  ): Promise<AbegResponseData<TData, TError>> {
+    externalSignal?: RequestInit["signal"],
+  ) {
     const previousController = abortControllerStore.get(url);
 
     if (previousController) {
@@ -41,29 +49,41 @@ const createFetcher = <TBaseData, TBaseError>(
     }
 
     const controller = new AbortController();
-    const timeoutId = window.setTimeout(() => controller.abort(), timeout);
     abortControllerStore.set(url, controller);
+
+    const timeoutId =
+      typeof timeout === "number"
+        ? window.setTimeout(() => controller.abort(), timeout)
+        : null;
 
     try {
       const response = await fetch(`${baseURL}${url}`, {
-        signal: controller.signal,
+        signal: externalSignal ?? controller.signal,
         method: bodyData ? "POST" : "GET",
         body: bodyData ? JSON.stringify(bodyData) : undefined,
-        headers: {
-          "Content-Type": "application/json",
-        },
-        credentials: "include",
+
+        headers: bodyData
+          ? {
+              "content-type": "application/json",
+              accept: "application/json",
+            }
+          : undefined,
+
         ...restOfBaseConfig,
       });
 
-      await responseInterceptor?.(response);
-
+      // Response has http errors
       if (!response.ok) {
+        await onResponseError?.(response);
+
         return {
           data: null,
           error: await getResponseData<AbegErrorResponse<TError>>(response),
         };
       }
+
+      // Response was successful
+      await onResponseSuccess?.(response);
 
       return {
         data: await getResponseData<AbegSuccessResponse<TData>>(response),
@@ -73,11 +93,11 @@ const createFetcher = <TBaseData, TBaseError>(
       // Exhaustive error handling
     } catch (error) {
       if (error instanceof DOMException && error.name === "AbortError") {
-        process.env.NODE_ENV === "development" &&
-          console.error(
-            "AbortError",
-            `Request to ${url} timed out after ${timeout}ms`,
-          );
+        console.info(
+          `%cAbortError: Request to ${url} timed out after ${timeout}ms`,
+
+          "color: red; font-weight: 500; font-size: 14px;",
+        );
 
         return {
           data: null,
@@ -88,20 +108,28 @@ const createFetcher = <TBaseData, TBaseError>(
         };
       }
 
+      if (error instanceof SyntaxError || error instanceof TypeError) {
+        return {
+          data: null,
+          error: {
+            status: "Error",
+            message: error.message,
+          },
+        };
+      }
+
       return {
         data: null,
         error: {
           status: "Error",
-          message:
-            (error as SyntaxError | TypeError | Error).message ??
-            defaultErrorMessage,
+          message: (error as Error).message ?? defaultErrorMessage,
         },
       };
 
       // Clean up the timeout and remove the now unneeded AbortController from store
     } finally {
       abortControllerStore.delete(url);
-      window.clearTimeout(timeoutId);
+      timeoutId !== null && window.clearTimeout(timeoutId);
     }
   }
 
