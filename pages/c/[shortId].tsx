@@ -1,7 +1,7 @@
-import { Loader } from "@/components/common";
-import { CampaignOutlook, Heading } from "@/components/create-campaign";
+import { Heading, Loader } from "@/components/common";
+import { CampaignOutlook } from "@/components/create-campaign";
 import type { Campaign } from "@/interfaces/Campaign";
-import { AuthenticatedUserLayout } from "@/layouts";
+import { BaseLayout } from "@/layouts";
 import { callApi } from "@/lib/helpers/campaign";
 import { generateExcerpt } from "@/lib/helpers/campaign/generateExcerpt";
 import type {
@@ -49,9 +49,9 @@ export const getStaticProps = (async (context) => {
 	};
 }) satisfies GetStaticProps<{ campaign: Campaign }>;
 
-type CampaignViewProps = InferGetStaticPropsType<typeof getStaticProps>;
-
-function CampaignView({ campaign }: CampaignViewProps) {
+function CampaignView({
+	campaign,
+}: InferGetStaticPropsType<typeof getStaticProps>) {
 	const router = useRouter();
 
 	if (router.isFallback) {
@@ -61,7 +61,7 @@ function CampaignView({ campaign }: CampaignViewProps) {
 	const excerpt = generateExcerpt(campaign.story);
 
 	return (
-		<AuthenticatedUserLayout isDashboard>
+		<>
 			<NextSeo
 				title={campaign.title}
 				description={excerpt}
@@ -86,15 +86,19 @@ function CampaignView({ campaign }: CampaignViewProps) {
 				}}
 			/>
 
-			<CampaignOutlook campaign={campaign}>
+			<CampaignOutlook excerpt={excerpt} campaign={campaign}>
 				<CampaignOutlook.Header>
-					<Heading as="h1" className="text-xl lg:text-[32px]">
+					<Heading as="h1" className="text-4xl lg:text-4xl">
 						{`${campaign.title[0].toUpperCase()}${campaign.title.slice(1)}`}
 					</Heading>
 				</CampaignOutlook.Header>
 			</CampaignOutlook>
-		</AuthenticatedUserLayout>
+		</>
 	);
 }
 
 export default CampaignView;
+
+CampaignView.getLayout = (page: React.ReactElement) => (
+	<BaseLayout>{page}</BaseLayout>
+);

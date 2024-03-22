@@ -1,10 +1,11 @@
 import { cn } from "@/lib";
-import { useElementList } from "@/lib/hooks";
+import { useBaseElementList } from "@/lib/hooks";
 import type { PolymorphicProps } from "@/lib/type-helpers";
 import { ChevronLeftCircleIcon, ChevronRightCircleIcon } from "lucide-react";
 import type {
 	CarouselButtonsProps,
 	CarouselContentProps,
+	CarouselControlProps,
 	CarouselIndicatorProps,
 	CarouselIndicatorWrapperProps,
 	CarouselItemWrapperProps,
@@ -56,17 +57,12 @@ function CarouselContent<TElement extends React.ElementType = "article">(
 	);
 }
 
-function CarouselButton(props: CarouselButtonsProps) {
+function $CarouselButton(props: CarouselButtonsProps) {
 	const { type, icon, classNames = {} } = props;
 
 	const nextOrPreviousSlide = useCarouselStore((state) =>
 		type === "prev" ? state.actions.previousSlide : state.actions.nextSlide
 	);
-
-	const semanticVariants = {
-		base: { prev: "left-0", next: "right-0" },
-		iconContainer: { prev: "left-[7px]", next: "right-[7px]" },
-	};
 
 	const DefaultIcon =
 		type === "prev" ? ChevronLeftCircleIcon : ChevronRightCircleIcon;
@@ -74,33 +70,63 @@ function CarouselButton(props: CarouselButtonsProps) {
 	return (
 		<button
 			className={cn(
-				"absolute z-40 h-full w-[90px]",
-				semanticVariants.base[type],
+				"z-[30] flex h-full w-[15%] items-center",
+				type === "prev" ? "justify-start" : "justify-end",
 				classNames.base
 			)}
 			onClick={nextOrPreviousSlide}
 		>
 			<span
 				className={cn(
-					"absolute top-[45%] transition-transform active:scale-[1.11]",
-					semanticVariants.iconContainer[type],
+					"transition-transform active:scale-[1.06]",
 					classNames.iconContainer
 				)}
 			>
-				{icon ?? <DefaultIcon className={classNames.icon} />}
+				{icon ?? <DefaultIcon className={classNames.defaultIcon} />}
 			</span>
 		</button>
 	);
 }
 
-function CarouselItemWrapper<TArray extends unknown[]>(
-	props: CarouselItemWrapperProps<TArray>
-) {
-	const { each, render, className } = props;
+function CarouselControls(props: CarouselControlProps) {
+	const { classNames, icons } = props;
 
-	const { For: ItemList } = useElementList();
+	/* eslint-disable react/jsx-pascal-case */
+	return (
+		<div
+			className={cn("absolute inset-0 flex justify-between", classNames?.base)}
+		>
+			<$CarouselButton
+				type="prev"
+				classNames={{
+					defaultIcon: classNames?.defaultIcons,
+					iconContainer: classNames?.iconsContainer,
+				}}
+				icon={icons?.prev}
+			/>
+
+			<$CarouselButton
+				type="next"
+				classNames={{
+					defaultIcon: classNames?.defaultIcons,
+					iconContainer: classNames?.iconsContainer,
+				}}
+				icon={icons?.next}
+			/>
+		</div>
+	);
+}
+
+function CarouselItemWrapper<TArrayItem>(
+	props: CarouselItemWrapperProps<TArrayItem>
+) {
+	const { each, children, render, className } = props;
+
+	const [ItemList] = useBaseElementList();
 	const currentSlide = useCarouselStore((state) => state.currentSlide);
-	const images = useCarouselStore((state) => each ?? (state.images as TArray));
+	const images = useCarouselStore(
+		(state) => each ?? (state.images as TArrayItem[])
+	);
 
 	return (
 		<ul
@@ -113,56 +139,78 @@ function CarouselItemWrapper<TArray extends unknown[]>(
 				transform: `translate3d(-${currentSlide * 100}%, 0, 0)`,
 			}}
 		>
-			<ItemList each={images} render={render} />
+			{typeof render === "function" ? (
+				<ItemList each={images} render={render} />
+			) : (
+				<ItemList each={images}>{children}</ItemList>
+			)}
 		</ul>
 	);
 }
 
-function CarouselItem({ children, className }: OtherCarouselProps) {
+function CarouselItem({
+	children,
+	className,
+	...restOfProps
+}: OtherCarouselProps) {
 	return (
 		<li
 			className={cn(
 				"flex w-full shrink-0 snap-center justify-center",
 				className
 			)}
+			{...restOfProps}
 		>
 			{children}
 		</li>
 	);
 }
 
-function CarouselCaption({ children, className }: OtherCarouselProps) {
+function CarouselCaption<TElement extends React.ElementType = "div">(
+	props: PolymorphicProps<TElement, OtherCarouselProps>
+) {
+	const { as: HtmlElement = "div", children, className } = props;
+
 	return (
-		<div data-id="Carousel Caption" className={cn("absolute", className)}>
+		<HtmlElement
+			data-id="Carousel Caption"
+			className={cn("absolute z-[10]", className)}
+		>
 			{children}
-		</div>
+		</HtmlElement>
 	);
 }
 
-function CarouselIndicatorWrapper<TArray extends unknown[]>(
-	props: CarouselIndicatorWrapperProps<TArray>
+function CarouselIndicatorWrapper<TArrayItem>(
+	props: CarouselIndicatorWrapperProps<TArrayItem>
 ) {
-	const { each, render, classNames = {} } = props;
+	const { each, children, render, classNames = {} } = props;
 
-	const images = useCarouselStore((state) => each ?? (state.images as TArray));
-	const { For: IndicatorList } = useElementList();
+	const images = useCarouselStore(
+		(state) => each ?? (state.images as TArrayItem[])
+	);
+	const [IndicatorList] = useBaseElementList();
 
 	return (
 		<div
 			data-id="Carousel Indicators"
 			className={cn(
-				"absolute top-[-25px] z-[5] flex w-full justify-center",
+				"absolute top-[-25px] z-[20] flex w-full justify-center",
 				classNames.base
 			)}
 		>
-			<span
+			<ul
 				className={cn(
 					"flex items-center justify-center gap-4",
 					classNames.indicatorContainer
 				)}
 			>
-				<IndicatorList each={images} render={render} />
-			</span>
+				{typeof render === "function" ? (
+					<IndicatorList each={images} render={render} />
+				) : (
+					<IndicatorList each={images}>{children}</IndicatorList>
+				)}
+			</ul>
 		</div>
 	);
 }
@@ -176,23 +224,23 @@ function CarouselIndicator(props: CarouselIndicatorProps) {
 	} = useCarouselStore((state) => state);
 
 	return (
-		<button
-			onClick={() => goToSlide(currentIndex)}
-			className={cn(
-				"size-[6px] shrink-0 cursor-pointer ease-in-out",
-
-				classNames.base,
-
-				currentIndex === currentSlide && ["w-[20px]", classNames.onActive]
-			)}
-		/>
+		<li>
+			<button
+				onClick={() => goToSlide(currentIndex)}
+				className={cn(
+					"size-[6px] shrink-0 cursor-pointer ease-in-out",
+					classNames.base,
+					currentIndex === currentSlide && ["w-[20px]", classNames.onActive]
+				)}
+			/>
+		</li>
 	);
 }
 
 const Carousel = {
 	Root: CarouselContextProvider,
 	Content: CarouselContent,
-	Button: CarouselButton,
+	Controls: CarouselControls,
 	Item: CarouselItem,
 	ItemWrapper: CarouselItemWrapper,
 	Caption: CarouselCaption,

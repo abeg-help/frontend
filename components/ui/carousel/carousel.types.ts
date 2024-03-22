@@ -1,4 +1,5 @@
-import type { RenderPropFn } from "@/lib/hooks/useElementList/For";
+import type { EachProp, ForRenderProps } from "@/lib/hooks/useElementList/For";
+import type { Prettify } from "@/lib/type-helpers";
 import type { StoreApi } from "zustand";
 
 // Carousel store types
@@ -49,12 +50,25 @@ export type CarouselContentProps = {
 export type CarouselButtonsProps = {
 	type: "prev" | "next";
 
-	icon?: React.ReactNode;
-
 	classNames?: {
 		base?: string;
 		iconContainer?: string;
-		icon?: string;
+		defaultIcon?: string;
+	};
+
+	icon?: React.ReactNode;
+};
+
+export type CarouselControlProps = {
+	classNames?: {
+		base?: string;
+		defaultIcons?: string;
+		iconsContainer?: string;
+	};
+
+	icons?: {
+		prev?: React.ReactNode;
+		next?: React.ReactNode;
 	};
 };
 
@@ -66,18 +80,17 @@ export type CarouselIndicatorProps = {
 	currentIndex: number;
 };
 
-type CarouselWrapperProps<TArray extends unknown[]> = {
-	each?: TArray;
-	render: RenderPropFn<TArray>;
-};
+type BaseWrapperProps<TArrayItem> = Prettify<
+	ForRenderProps<TArrayItem> & Partial<EachProp<TArrayItem>>
+>;
 
-export type CarouselItemWrapperProps<TArray extends unknown[]> =
-	CarouselWrapperProps<TArray> & {
+export type CarouselItemWrapperProps<TArrayItem> =
+	BaseWrapperProps<TArrayItem> & {
 		className?: string;
 	};
 
-export type CarouselIndicatorWrapperProps<TArray extends unknown[]> =
-	CarouselWrapperProps<TArray> & {
+export type CarouselIndicatorWrapperProps<TArrayItem> =
+	BaseWrapperProps<TArrayItem> & {
 		classNames?: {
 			base?: string;
 			indicatorContainer?: string;
@@ -85,6 +98,7 @@ export type CarouselIndicatorWrapperProps<TArray extends unknown[]> =
 	};
 
 export type OtherCarouselProps = {
-	children: React.ReactNode;
+	children?: React.ReactNode;
 	className?: string;
+	style?: React.CSSProperties;
 };

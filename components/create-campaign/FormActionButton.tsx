@@ -3,6 +3,7 @@ import { Button } from "../ui";
 
 type BaseProps = {
 	targetForm?: string;
+	asChild?: boolean;
 	type: "button" | "submit";
 	variant?: "primary" | "secondary" | "danger";
 	className?: string;
@@ -22,6 +23,7 @@ type FormActionButtonProps =
 function FormActionButton(props: FormActionButtonProps) {
 	const {
 		targetForm,
+		asChild,
 		variant = "primary",
 		className,
 		type,
@@ -33,6 +35,7 @@ function FormActionButton(props: FormActionButtonProps) {
 
 	return (
 		<Button
+			asChild={asChild}
 			form={targetForm}
 			type={type}
 			variant={variant}

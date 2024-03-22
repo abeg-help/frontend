@@ -1,5 +1,7 @@
-import For from "./For";
+import ForObject from "./For";
 
-const useElementList = () => ({ For });
+const { For, ForList } = ForObject;
 
-export { useElementList };
+export const useElementList = (): [ForList: typeof ForList] => [ForList];
+
+export const useBaseElementList = (): [For: typeof For] => [For];

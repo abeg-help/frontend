@@ -29,24 +29,26 @@ export type FormStore = {
 
 	currentStep: Campaign["currentStep"];
 
-	formStepData: Prettify<StepOneData & StepTwoData & StepThreeData>;
+	campaignId: Campaign["_id"];
 
-	currentCampaign: Campaign & { shortId: string };
+	formStepData: Prettify<StepOneData & StepTwoData & StepThreeData>;
 
 	actions: {
 		goToStep: (newStep: number) => void;
 
-		updateCurrentCampaign: (
-			updatedInfo: Partial<FormStore["currentCampaign"]>
+		updateCampaignId: (
+			updatedId: Partial<FormStore["campaignId"]> | undefined
+		) => void;
+
+		updateFormStatus: (
+			updatedFormStatus: Partial<FormStore["formStatus"]>
 		) => void;
 
 		updateFormData: (
 			updatedFormData: Partial<FormStore["formStepData"]>
 		) => void;
 
-		updateFormStatus: (
-			updatedFormStatus: Partial<FormStore["formStatus"]>
-		) => void;
+		resetFormData: () => void;
 
 		initializeFormData: () => void;
 	};
@@ -55,14 +57,12 @@ export type FormStore = {
 export const initialFormState = {
 	currentStep: 1,
 
-	currentCampaign: {
-		shortId: "",
-	} as FormStore["currentCampaign"],
-
 	formStatus: {
 		isValid: true,
 		isSubmitting: false,
 	},
+
+	campaignId: "",
 
 	formStepData: {
 		categoryId: "",
@@ -88,24 +88,16 @@ export const useInitFormStore = create<FormStore>()((set, get) => ({
 			set({ currentStep: newStep as FormStore["currentStep"] });
 		},
 
-		updateCurrentCampaign: (newInfo) => {
-			const { currentCampaign: previousInfo } = get();
-
-			set({
-				currentCampaign: {
-					...previousInfo,
-					...newInfo,
-					shortId: newInfo.url
-						? newInfo.url.split("/c/")[1]
-						: previousInfo.shortId,
-				},
-			});
-		},
-
 		updateFormStatus: (newFormStatus) => {
 			const { formStatus: previousFormStatus } = get();
 
 			set({ formStatus: { ...previousFormStatus, ...newFormStatus } });
+		},
+
+		updateCampaignId: (updatedId) => {
+			if (!updatedId || updatedId === get().campaignId) return;
+
+			set({ campaignId: updatedId });
 		},
 
 		updateFormData: (updatedFormData) => {
@@ -113,6 +105,8 @@ export const useInitFormStore = create<FormStore>()((set, get) => ({
 
 			set({ formStepData: { ...formStepData, ...updatedFormData } });
 		},
+
+		resetFormData: () => set({ formStepData: initialFormState.formStepData }),
 
 		initializeFormData: () => {
 			const { campaigns } = useInitCampaignStore.getState();
@@ -123,10 +117,10 @@ export const useInitFormStore = create<FormStore>()((set, get) => ({
 
 			if (currentCampaign.status !== "Draft") return;
 
-			get().actions.updateCurrentCampaign(currentCampaign);
-
 			set({
 				currentStep: currentCampaign.currentStep,
+
+				campaignId: currentCampaign._id,
 
 				formStepData: {
 					categoryId: currentCampaign.category?._id ?? "",

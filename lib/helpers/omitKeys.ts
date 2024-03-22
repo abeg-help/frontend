@@ -1,4 +1,9 @@
-import type { Prettify } from "../type-helpers";
+import type { Prettify, Writeable } from "../type-helpers";
+
+type PrettifyOmitResult<
+	TObject extends Record<string, unknown>,
+	TOmitArray extends Array<keyof TObject>,
+> = Prettify<Writeable<Omit<TObject, TOmitArray[number]>>>;
 
 export const omitKeys = <
 	const TObject extends Record<string, unknown>,
@@ -13,5 +18,5 @@ export const omitKeys = <
 
 	const updatedObject = Object.fromEntries(arrayFromFilteredObject);
 
-	return updatedObject as Prettify<Omit<TObject, TOmitArray[number]>>;
+	return updatedObject as PrettifyOmitResult<TObject, TOmitArray>;
 };

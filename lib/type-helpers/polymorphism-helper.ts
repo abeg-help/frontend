@@ -1,10 +1,10 @@
-type AsProp<TElement extends React.ElementType> = {
+export type AsProp<TElement extends React.ElementType = React.ElementType> = {
 	as?: TElement;
 };
 
-export type RequiredAsProp<TElement extends React.ElementType> = Required<
-	AsProp<TElement>
->;
+export type RequiredAsProp<
+	TElement extends React.ElementType = React.ElementType,
+> = Required<AsProp<TElement>>;
 
 type RefProp<TElement extends React.ElementType> = {
 	ref?: React.ComponentPropsWithRef<TElement>["ref"];

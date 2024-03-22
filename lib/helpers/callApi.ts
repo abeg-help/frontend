@@ -1,5 +1,6 @@
 import { useInitSession } from "@/store/useSession";
 import axios, { type AxiosInstance, type AxiosResponse } from "axios";
+import { useRouter } from "next/router";
 import { toast } from "sonner";
 import { isObject } from "../type-helpers";
 import { assertENV } from "../type-helpers/assert";
@@ -60,6 +61,13 @@ export const callApi = async <T>(
 				toast.error("Too may requests!", {
 					description: error.message,
 				});
+			}
+
+			if (error.response.status === 500) {
+				toast.error("Internal server Error!", {
+					description: error.message,
+				});
+				useRouter().push("/500");
 			}
 		} else {
 			if (error instanceof Error) {

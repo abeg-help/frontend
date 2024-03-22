@@ -10,7 +10,8 @@ type CampaignStore = {
 	categories: Array<{ _id: string; name: string }>;
 
 	actions: {
-		updateCampaign: (updatedCampaigns: Campaign[]) => void;
+		addCampaign: (newCampaign: Campaign) => void;
+		initializeCampaigns: (campaigns: Campaign[]) => void;
 		initializeCategories: () => Promise<void>;
 	};
 };
@@ -21,11 +22,17 @@ const initialState = {
 	categories: [],
 } satisfies Omit<CampaignStore, "actions">;
 
-export const useInitCampaignStore = create<CampaignStore>()((set) => ({
+export const useInitCampaignStore = create<CampaignStore>()((set, get) => ({
 	...initialState,
 
 	actions: {
-		updateCampaign: (updatedCampaigns) => set({ campaigns: updatedCampaigns }),
+		addCampaign: (newCampaign) => {
+			const { campaigns: oldCampaigns } = get();
+
+			set({ campaigns: [...oldCampaigns, newCampaign] });
+		},
+
+		initializeCampaigns: (campaigns) => set({ campaigns }),
 
 		initializeCategories: async () => {
 			const { data, error } = await callApi<CampaignStore["categories"]>(
@@ -38,8 +45,6 @@ export const useInitCampaignStore = create<CampaignStore>()((set) => ({
 		},
 	} satisfies CampaignStore["actions"],
 }));
-
-void useInitCampaignStore.getState().actions.initializeCategories();
 
 export const useCampaignStore = <TResult>(
 	selector: SelectorFn<CampaignStore, TResult>

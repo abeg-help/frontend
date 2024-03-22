@@ -31,7 +31,7 @@ const Login = () => {
 	} = useSession((state) => state);
 
 	const {
-		actions: { updateCampaign },
+		actions: { initializeCampaigns },
 	} = useCampaignStore((state) => state);
 
 	const {
@@ -46,7 +46,7 @@ const Login = () => {
 	});
 	const handleSkip2fa = () => {
 		localStorage.setItem(`skip-2FA-${user?._id}`, JSON.stringify(true));
-		void router.push("/dashboard");
+		void router.push("/c");
 		setOpenModal(false);
 	};
 
@@ -85,7 +85,7 @@ const Login = () => {
 				if (user.twoFA.active === false) {
 					const skipModal = localStorage.getItem(`skip-2FA-${user._id}`);
 					if (skipModal === "true") {
-						router.push(campaigns.length > 0 ? "/dashboard" : "/c/create");
+						router.push(campaigns.length > 0 ? "/c" : "/c/create");
 					} else {
 						setOpenModal(true);
 						await router.push("/signin?redirect=false", undefined, {
@@ -94,7 +94,7 @@ const Login = () => {
 					}
 					// populate store with initial data
 					updateUser(user);
-					updateCampaign(campaigns);
+					initializeCampaigns(campaigns);
 				} else {
 					router.push({
 						pathname: "/2fa/authenticate",

@@ -7,6 +7,7 @@ const config = {
 		"./layouts/**/*.{js,ts,jsx,tsx,mdx}",
 		"./components/**/*.{js,ts,jsx,tsx,mdx}",
 		"./app/**/*.{js,ts,jsx,tsx,mdx}",
+		"./lib/hooks/useDragScroll.ts",
 	],
 
 	theme: {
@@ -20,6 +21,7 @@ const config = {
 			backgroundImage: {
 				contours: "url('/assets/images/shared/bg-contours.png')",
 				authBg: "url('/assets/images/auth/auth-bg-jar.svg')",
+				heroBg: "url('/assets/images/shared/hero-background.svg')",
 				dashboardBg: "url('/assets/images/dashboard/dashboardBg.png')",
 				"gradient-radial": "radial-gradient(var(--tw-gradient-stops))",
 				"gradient-conic":

@@ -2,8 +2,10 @@ import { cn } from "@/lib";
 import type { ForwardedRefType } from "@/lib/type-helpers";
 import { cva } from "class-variance-authority";
 import { forwardRef } from "react";
+import { Slot } from "./slot";
 
 type ButtonProps = {
+	asChild?: boolean;
 	className?: string;
 	fullWidth?: boolean;
 	children: React.ReactNode;
@@ -18,6 +20,7 @@ const ButtonUI = (
 	ref: ForwardedRefType<HTMLButtonElement>
 ) => {
 	const {
+		asChild,
 		className,
 		children,
 		fullWidth,
@@ -40,10 +43,12 @@ const ButtonUI = (
 			variant === "regular",
 	};
 
+	const Element = asChild ? Slot : "button";
+
 	return (
-		<button
+		<Element
 			className={cn(
-				"rounded-lg px-4 py-3 text-sm font-medium text-white disabled:bg-abeg-neutral-50",
+				"rounded-lg px-4 block py-3 text-sm font-medium text-white disabled:bg-abeg-neutral-50",
 				buttonClass,
 				className
 			)}
@@ -74,7 +79,7 @@ const ButtonUI = (
 			) : (
 				children
 			)}
-		</button>
+		</Element>
 	);
 };
 

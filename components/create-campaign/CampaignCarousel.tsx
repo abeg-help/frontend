@@ -1,5 +1,8 @@
+import { DonorIcon } from "@/components/common/campaign-icons";
 import type { Campaign } from "@/interfaces/Campaign";
+import { ArrowLeftIcon, ArrowRightIcon } from "lucide-react";
 import Image from "next/image";
+import { ClockIcon, LocationIcon } from "../common";
 import { Carousel } from "../ui/carousel";
 
 type CampaignCarouselProps = {
@@ -17,58 +20,54 @@ const CampaignCarousel = (props: CampaignCarouselProps) => {
 			<Carousel.Content
 				classNames={{
 					base: classNames?.base,
-					scrollContainer: "rounded-lg lg:rounded-[10px]",
+					scrollContainer: "rounded-[5px] lg:rounded-[15px]",
 				}}
 			>
-				<Carousel.Button
-					type="prev"
+				<Carousel.Controls
 					classNames={{
-						iconContainer:
-							"top-[calc(100%_+_8px)] lg:top-[calc(100%_+_16px)] left-[24px]",
-						icon: "size-5 lg:size-6",
+						base: "px-[18px] py-[25px] md:px-[53px] lg:py-10",
+						iconsContainer:
+							"size-[25px] lg:size-20 bg-abeg-text/40 flex justify-center items-center border border-white backdrop-blur-md rounded-full",
+					}}
+					icons={{
+						prev: <ArrowLeftIcon className="size-2.5 lg:size-[30px]" />,
+						next: <ArrowRightIcon className="size-2.5 lg:size-[30px]" />,
 					}}
 				/>
 
-				<Carousel.Button
-					type="next"
-					classNames={{
-						iconContainer:
-							"top-[calc(100%_+_8px)] lg:top-[calc(100%_+_16px)] right-[24px]",
-						icon: "size-5 lg:size-6",
-					}}
-				/>
+				<Carousel.Caption className="inset-0 flex flex-col items-start justify-between px-[18px] py-[25px] text-[10px] font-medium md:px-[53px] lg:rounded-[15px] lg:py-10 lg:text-[30px]">
+					<figure className="flex items-center gap-1 rounded-md bg-abeg-text/30 p-[6px] backdrop-blur-md lg:gap-2 lg:rounded-[15px] lg:p-5">
+						<LocationIcon className="size-4 lg:size-10" />
+						<figcaption>Lagos, Nigeria</figcaption>
+					</figure>
 
-				<Carousel.ItemWrapper<typeof images>
+					<div className="flex w-full justify-between">
+						<figure className="flex items-center gap-1 rounded-md bg-abeg-text/30 p-[6px] backdrop-blur-md lg:gap-2 lg:rounded-[15px] lg:p-5">
+							<DonorIcon stroke="light" className="size-4 lg:size-10" />
+							<figcaption>235,567 total donors</figcaption>
+						</figure>
+
+						<figure className="flex items-center gap-1 rounded-md bg-abeg-text/30 p-[6px] backdrop-blur-md lg:gap-2 lg:rounded-[15px] lg:p-5">
+							<ClockIcon className="size-4 lg:size-10" />
+							<figcaption>20 days left</figcaption>
+						</figure>
+					</div>
+				</Carousel.Caption>
+
+				<Carousel.ItemWrapper<(typeof images)[number]>
 					render={(image) => (
 						<Carousel.Item key={image.secureUrl}>
 							<Image
 								src={image.secureUrl}
-								blurDataURL={image.blurHash}
 								alt="campaign image"
-								className="aspect-[342/200] w-full object-cover lg:h-[400px]"
-								width={342}
-								height={200}
+								className="aspect-[381/250] w-full object-cover max-lg:max-h-[350px] lg:aspect-[1241/599]"
+								width={381}
+								height={250}
 								priority={true}
+								draggable={false}
 								fetchPriority="high"
 							/>
 						</Carousel.Item>
-					)}
-				/>
-
-				<Carousel.IndicatorWrapper<typeof images>
-					classNames={{
-						base: "top-[calc(100%_+_16px)] lg:top-[calc(100%_+_23px)]",
-						indicatorContainer: "gap-2 overflow-x-hidden",
-					}}
-					render={(image, index) => (
-						<Carousel.Indicator
-							key={image.secureUrl}
-							currentIndex={index}
-							classNames={{
-								base: "bg-lightGreen snap-start h-[6px] lg:h-[10px] w-[23px] rounded-[101px]",
-								onActive: "bg-abeg-primary w-[40px]",
-							}}
-						/>
 					)}
 				/>
 			</Carousel.Content>

@@ -1,6 +1,4 @@
-import React from "react";
-
-const LocationIcon = () => {
+const LocationIcon = (props: React.SVGProps<SVGSVGElement>) => {
 	return (
 		<svg
 			width="16"
@@ -8,6 +6,7 @@ const LocationIcon = () => {
 			viewBox="0 0 16 16"
 			fill="none"
 			xmlns="http://www.w3.org/2000/svg"
+			{...props}
 		>
 			<path
 				d="M8.00187 8.95297C9.15063 8.95297 10.0819 8.02172 10.0819 6.87297C10.0819 5.72422 9.15063 4.79297 8.00187 4.79297C6.85312 4.79297 5.92188 5.72422 5.92188 6.87297C5.92188 8.02172 6.85312 8.95297 8.00187 8.95297Z"

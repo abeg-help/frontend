@@ -16,9 +16,9 @@ import FormErrorMessage from "../FormErrorMessage";
 function StepTwo() {
 	const {
 		currentStep,
-		currentCampaign,
+		campaignId,
 		formStepData,
-		actions: { goToStep, updateFormData, updateCurrentCampaign },
+		actions: { goToStep, updateFormData, updateCampaignId },
 	} = useFormStore((state) => state);
 
 	const { control, formState, reset, getValues, register, handleSubmit } =
@@ -43,7 +43,7 @@ function StepTwo() {
 			`/campaign/create/two`,
 			{
 				...data,
-				campaignId: currentCampaign._id,
+				campaignId,
 			}
 		);
 
@@ -57,7 +57,7 @@ function StepTwo() {
 
 		if (!dataInfo.data) return;
 
-		updateCurrentCampaign(dataInfo.data);
+		updateCampaignId(dataInfo.data._id);
 		goToStep(3);
 	};
 

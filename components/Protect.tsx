@@ -29,6 +29,7 @@ const Auth = ({ children }: { children: ReactNode }) => {
 	const redirect = (route: string, message: string) => {
 		toast.error("Page access denied!", {
 			description: message,
+			id: "access-denied",
 			duration: 1000,
 		});
 

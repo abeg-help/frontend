@@ -7,7 +7,7 @@ import {
 } from "@/components/create-campaign";
 import { AuthenticatedUserLayout } from "@/layouts";
 import { cn } from "@/lib";
-import { useFormStore } from "@/store";
+import { useFormStore, useInitCampaignStore } from "@/store";
 import { useEffect } from "react";
 
 const STEP_COMPONENT_LOOKUP = {
@@ -15,6 +15,8 @@ const STEP_COMPONENT_LOOKUP = {
 	2: <StepTwo />,
 	3: <StepThree />,
 };
+
+void useInitCampaignStore.getState().actions.initializeCategories();
 
 function CreateCampaignPage() {
 	const {

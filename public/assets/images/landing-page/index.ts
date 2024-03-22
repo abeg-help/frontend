@@ -28,3 +28,5 @@ export { default as testimonialImage3 } from "@/public/assets/images/landing-pag
 export { default as timeCamp } from "@/public/assets/images/landing-page/timecamp.svg";
 export { default as twitter } from "@/public/assets/images/landing-page/Twitter.svg";
 export { default as youtube } from "@/public/assets/images/landing-page/YouTube.svg";
+export { default as campaignHero } from "@/public/assets/images/landing-page/campaign-hero.svg";
+export { default as storiesAboutUs } from "@/public/assets/images/landing-page/stories-about-us.png";

@@ -2,12 +2,14 @@ import { useCallback, useEffect, useLayoutEffect, useRef } from "react";
 import { isServer } from "../constants";
 import type { CallbackFn } from "../type-helpers/global-type-helpers";
 
-const useCallbackRef = <TParams, TResult>(
+const useIsoMorphicLayoutEffect = isServer ? useEffect : useLayoutEffect;
+
+const useCallbackRef = <TParams, TResult = unknown>(
 	callbackFn: CallbackFn<TParams, TResult>
 ) => {
 	const callbackRef = useRef(callbackFn);
 
-	useLayoutEffect(() => {
+	useIsoMorphicLayoutEffect(() => {
 		// == Doing this instead updating it directly during render phase, cuz according to Dan Abramov, render should be pure
 		callbackRef.current = callbackFn;
 	}, [callbackFn]);

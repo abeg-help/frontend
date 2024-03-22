@@ -1,3 +1,5 @@
+import { Heading } from "@/components/common";
+import { CrossIcon } from "@/components/common/campaign-icons";
 import { Select } from "@/components/ui";
 import type { Campaign } from "@/interfaces/Campaign";
 import { zodValidator } from "@/lib";
@@ -6,8 +8,11 @@ import {
 	targetCountries,
 	validateTagValue,
 } from "@/lib/helpers/campaign";
-import { useElementList, useWatchFormStatus } from "@/lib/hooks";
-import { CrossIcon } from "@/public/assets/icons/campaign";
+import {
+	useBaseElementList,
+	useElementList,
+	useWatchFormStatus,
+} from "@/lib/hooks";
 import { useCampaignStore } from "@/store";
 import { type StepOneData, useFormStore } from "@/store/useFormStore";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -15,7 +20,6 @@ import { ChevronDownIcon } from "lucide-react";
 import { type KeyboardEvent, type MouseEvent, useEffect, useRef } from "react";
 import { Controller, useForm } from "react-hook-form";
 import { toast } from "sonner";
-import Heading from "../../common/Heading";
 import FormErrorMessage from "../FormErrorMessage";
 
 function StepOne() {
@@ -23,16 +27,12 @@ function StepOne() {
 
 	const {
 		currentStep,
-		currentCampaign,
+		campaignId,
 		formStepData,
-		actions: { goToStep, updateFormData, updateCurrentCampaign },
+		actions: { goToStep, updateFormData, updateCampaignId },
 	} = useFormStore((state) => state);
 
-	const { categories: campaignCategories } = useCampaignStore((state) => state);
-
-	const { For: TagList } = useElementList();
-	const { For: CategoryList } = useElementList();
-	const { For: CountryList } = useElementList();
+	const campaignCategories = useCampaignStore((state) => state.categories);
 
 	const {
 		control,
@@ -53,6 +53,10 @@ function StepOne() {
 		}
 	}, [formStepData]);
 
+	const [CategoryList] = useBaseElementList();
+	const [CountryList] = useBaseElementList();
+	const [TagList] = useElementList();
+
 	useWatchFormStatus(formState);
 
 	const onSubmit = async (data: StepOneData) => {
@@ -62,7 +66,7 @@ function StepOne() {
 			`/campaign/create/one`,
 			{
 				...data,
-				...(!!currentCampaign._id && { campaignId: currentCampaign._id }),
+				...(!!campaignId && { campaignId }),
 			}
 		);
 
@@ -76,7 +80,7 @@ function StepOne() {
 
 		if (!dataInfo.data) return;
 
-		updateCurrentCampaign(dataInfo.data);
+		updateCampaignId(dataInfo.data._id);
 		goToStep(2);
 	};
 
@@ -249,27 +253,26 @@ function StepOne() {
 								{formStepData.tags.length}/5 tags
 							</span>
 
-							<ul className="flex flex-wrap gap-2 text-xs font-medium text-abeg-primary lg:text-base">
-								<TagList
-									each={formStepData.tags}
-									render={(tag, index) => (
-										<li
-											key={`${tag}-${index}`}
-											className="flex min-w-[8rem] items-center justify-between gap-[1rem] rounded-[20px] border-[1px] border-abeg-primary bg-[rgb(229,242,242)] p-[0.4rem_1.2rem]"
-										>
-											<p>{tag}</p>
+							<TagList
+								className="flex flex-wrap gap-2 text-xs font-medium text-abeg-primary lg:text-base"
+								each={formStepData.tags}
+								render={(tag, index) => (
+									<li
+										key={`${tag}-${index}`}
+										className="flex min-w-20 items-center justify-between gap-2.5 rounded-[20px] border-[1px] border-abeg-primary bg-[rgb(229,242,242)] px-3 py-1"
+									>
+										<p>{tag}</p>
 
-											<button
-												className="transition-transform duration-100 active:scale-[1.12]"
-												type="button"
-												onClick={handleRemoveTags(tag)}
-											>
-												<CrossIcon className="size-2.5" />
-											</button>
-										</li>
-									)}
-								/>
-							</ul>
+										<button
+											className="transition-transform duration-100 active:scale-[1.12]"
+											type="button"
+											onClick={handleRemoveTags(tag)}
+										>
+											<CrossIcon className="size-2.5" />
+										</button>
+									</li>
+								)}
+							/>
 						</div>
 					</li>
 				</ol>
