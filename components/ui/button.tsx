@@ -1,8 +1,8 @@
 import { cn } from "@/lib";
 import type { ForwardedRefType } from "@/lib/type-helpers";
+import { Slot } from "@radix-ui/react-slot";
 import { cva } from "class-variance-authority";
 import { forwardRef } from "react";
-import { Slot } from "./slot";
 
 type ButtonProps = {
 	asChild?: boolean;
