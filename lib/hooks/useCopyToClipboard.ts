@@ -15,7 +15,6 @@ const useCopyToClipboard = () => {
 	const copyToClipboard = (value: string) => {
 		const handleCopy = async () => {
 			try {
-				// eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
 				if (!navigator?.clipboard?.writeText) {
 					throw new Error("writeText not supported");
 				}

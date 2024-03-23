@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/array-type */
 import type {
 	ForwardedRefType,
 	PolymorphicPropsWithRef,
@@ -29,7 +28,6 @@ type ForProps<TArrayItem> = ForRenderProps<TArrayItem> & EachProp<TArrayItem>;
 function For<TArrayItem>(props: ForProps<TArrayItem>) {
 	const { each, render, children } = props;
 
-	// eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
 	if (each == null) {
 		return [];
 	}

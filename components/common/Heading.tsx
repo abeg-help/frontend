@@ -4,7 +4,6 @@ import type {
 	RequiredAsProp,
 } from "@/lib/type-helpers/polymorphism-helper";
 
-// eslint-disable-next-line no-use-before-define
 type HeadingElements = keyof typeof semanticHeadings;
 type HeadingProps<TElement extends HeadingElements> =
 	RequiredAsProp<TElement> & {

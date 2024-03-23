@@ -19,11 +19,13 @@ const Hero = ({ h1Tag, pTag, button1, button2, imageSrc }: Props) => {
 		<div className="relative flex items-center bg-cover bg-center md:py-10 lg:h-screen">
 			<Image
 				src="/assets/images/shared/hero-background.svg"
-				className="z-[-1] object-cover object-center"
+				className="absolute inset-0 z-[-1] size-full object-cover"
 				fetchPriority="high"
 				priority={true}
+				loading="eager"
 				alt=""
-				fill
+				width={1000}
+				height={1000}
 			/>
 			<div className="flex flex-col gap-4 px-5 text-gray-50 md:px-20 lg:flex-row lg:items-center  lg:gap-12">
 				<div className="flex w-full flex-col gap-6 lg:w-1/2">

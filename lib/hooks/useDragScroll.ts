@@ -2,7 +2,6 @@ import { useEffect, useRef } from "react";
 import { checkIsDeviceMobileOrTablet } from "../helpers/checkIsDeviceMobileOrTablet";
 import { useCallbackRef } from "./useCallbackRef";
 
-/* eslint-disable no-param-reassign */
 const updateCursor = <TElement extends HTMLElement>(element: TElement) => {
 	element.style.cursor = "grabbing";
 	element.style.userSelect = "none";

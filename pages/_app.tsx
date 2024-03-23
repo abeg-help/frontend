@@ -47,7 +47,6 @@ export default function App({ Component, pageProps }: ComponentWithPageLayout) {
 		void (async () => {
 			await getSession(true);
 		})();
-		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, []);
 
 	return (

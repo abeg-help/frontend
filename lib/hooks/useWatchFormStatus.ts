@@ -23,7 +23,6 @@ const useWatchFormStatus = <TStepData extends FieldValues>(
 		}
 
 		updateFormStatus({ isValid, isSubmitting });
-		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [isValid, isSubmitting]);
 };
 

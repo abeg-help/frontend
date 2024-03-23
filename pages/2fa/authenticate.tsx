@@ -40,7 +40,6 @@ const EmailAuth = ({ otp, setOtp, handleSubmit, loading, email }: Props) => {
 	};
 	useEffect(() => {
 		void resendCode();
-		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, []);
 	return (
 		<OtpInputDisplay

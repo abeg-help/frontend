@@ -57,7 +57,7 @@ function CarouselContent<TElement extends React.ElementType = "article">(
 	);
 }
 
-function $CarouselButton(props: CarouselButtonsProps) {
+function CarouselButton(props: CarouselButtonsProps) {
 	const { type, icon, classNames = {} } = props;
 
 	const nextOrPreviousSlide = useCarouselStore((state) =>
@@ -91,12 +91,11 @@ function $CarouselButton(props: CarouselButtonsProps) {
 function CarouselControls(props: CarouselControlProps) {
 	const { classNames, icons } = props;
 
-	/* eslint-disable react/jsx-pascal-case */
 	return (
 		<div
 			className={cn("absolute inset-0 flex justify-between", classNames?.base)}
 		>
-			<$CarouselButton
+			<CarouselButton
 				type="prev"
 				classNames={{
 					defaultIcon: classNames?.defaultIcons,
@@ -105,7 +104,7 @@ function CarouselControls(props: CarouselControlProps) {
 				icon={icons?.prev}
 			/>
 
-			<$CarouselButton
+			<CarouselButton
 				type="next"
 				classNames={{
 					defaultIcon: classNames?.defaultIcons,
